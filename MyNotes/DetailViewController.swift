@@ -9,7 +9,6 @@ import CoreData
 class DetailViewController: UIViewController {
     
     @IBOutlet weak var noteContent: UITextView!
-    @IBOutlet weak var btnSave: UIButton!
     @IBOutlet weak var detailDescriptionLabel: UILabel!
     @IBOutlet weak var noteTitle: UITextField!
     
@@ -19,6 +18,9 @@ class DetailViewController: UIViewController {
     }
     
     static var guid: String = ""
+    
+    //Timer! Property for auto-saving of note
+    var autoSaveTimer: Timer!
     
     var notes: [NSManagedObject] = []
 
@@ -38,6 +40,9 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        //Start the auto-save timer
+        autoSaveTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(autoSave), userInfo: nil, repeats: true)
+        
         //noteContent.layer.borderColor = UIColor.darkGray as! CGColor
         noteTitle.layer.borderWidth = 0.5
         noteTitle.layer.cornerRadius = 5
@@ -48,31 +53,7 @@ class DetailViewController: UIViewController {
         configureView()
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-    // Dismiss keyboard when user taps on view
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.view.endEditing(true)
-    }
-    
-    // Dismiss keyboard when user taps the return key on the keyboard after editing title
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        self.view.endEditing(true)
-        return false
-    }
-    
-    var noteDetail: Note? {
-        didSet {
-            DetailViewController.guid = noteDetail?.value(forKey: "guid") as! String
-            // Update the view.
-            configureView()
-        }
-    }
-    
-    @IBAction func SaveNote(_ sender: Any) {
+    func autoSave() {
         guard let appDelegate =
             UIApplication.shared.delegate as? AppDelegate else {
                 return
@@ -102,6 +83,35 @@ class DetailViewController: UIViewController {
             notes.append(myNote)
         } catch let error as NSError {
             print("Could not save. \(error), \(error.userInfo)")
+        }
+        print("Auto Saved")
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        autoSaveTimer.invalidate()
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+
+    // Dismiss keyboard when user taps on view
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
+    
+    // Dismiss keyboard when user taps the return key on the keyboard after editing title
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.endEditing(true)
+        return false
+    }
+    
+    var noteDetail: Note? {
+        didSet {
+            DetailViewController.guid = noteDetail?.value(forKey: "guid") as! String
+            // Update the view.
+            configureView()
         }
     }
 }
