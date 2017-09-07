@@ -27,10 +27,9 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        //Start the auto-save timer
+        //Start the auto-save timer to call autoSave() every 2 seconds
         autoSaveTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(autoSave), userInfo: nil, repeats: true)
         
-        //noteContent.layer.borderColor = UIColor.darkGray as! CGColor
         noteTitle.layer.borderWidth = 0.5
         noteTitle.layer.cornerRadius = 5
         
@@ -42,8 +41,6 @@ class DetailViewController: UIViewController {
     
     // Display the note title and content
     func configureView() {
-        print("Note GUID: \(DetailViewController.guid ?? "nil")")
-        
         if let title = noteDetail?.value(forKey: "title") as? String {
             noteTitle?.text = title
         }
@@ -72,13 +69,13 @@ class DetailViewController: UIViewController {
                                      insertInto: managedContext)
         
         // 3
+        // if this is a NEW note, set the GUID
         if (DetailViewController.guid == nil)
         {
-            print("Note GUID: \(DetailViewController.guid ?? "nil")")
             DetailViewController.guid = NSUUID().uuidString
+            print("New note being created: \(DetailViewController.guid ?? "nil")")
         }
         
-        print("Note GUID: \(DetailViewController.guid ?? "nil")")
         myNote.setValue(DetailViewController.guid, forKeyPath: "guid")
         
         myNote.setValue(noteTitle.text, forKeyPath: "title")
@@ -92,11 +89,11 @@ class DetailViewController: UIViewController {
         } catch let error as NSError {
             print("Could not save. \(error), \(error.userInfo)")
         }
-        print("Auto Saved")
+        print("Auto Saved Note: \(DetailViewController.guid ?? "nil")")
     }
     
     override func viewDidDisappear(_ animated: Bool) {
-        autoSaveTimer.invalidate()
+        autoSaveTimer.invalidate() //stop the auto-save timer
         DetailViewController.guid = nil
     }
     
@@ -118,8 +115,10 @@ class DetailViewController: UIViewController {
     
     var noteDetail: Note? {
         didSet {
-            DetailViewController.guid = noteDetail?.value(forKey: "guid") as! String
-            // Update the view.
+            // Set the note guid if passed in from the MasterView
+            DetailViewController.guid = noteDetail?.value(forKey: "guid") as? String
+            
+            // Update the view with passed in note title and content.
             configureView()
         }
     }

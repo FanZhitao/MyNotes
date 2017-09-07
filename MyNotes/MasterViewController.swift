@@ -20,7 +20,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         managedObjectContext?.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         
         title = "My Notes"
-        navigationItem.leftBarButtonItem = editButtonItem
+        //navigationItem.leftBarButtonItem = editButtonItem
 
         // configure the add ('+') button
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewNote(_:)))
@@ -36,93 +36,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         super.viewWillAppear(animated)
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-
     func insertNewNote(_ sender: Any) {
         self.performSegue(withIdentifier: "showDetail", sender: (Any).self);
     }
-
-//    func createNote() -> Bool {
-//        var success = false
-//        
-//        guard let appDelegate =
-//            UIApplication.shared.delegate as? AppDelegate else {
-//                return false
-//        }
-//        
-//        // 1
-//        let managedContext =
-//            appDelegate.persistentContainer.viewContext
-//        
-//        // 2
-//        let entity =
-//            NSEntityDescription.entity(forEntityName: "Note",
-//                                       in: managedContext)!
-//        
-//        let myNote = NSManagedObject(entity: entity,
-//                                     insertInto: managedContext)
-//        
-//        // 3
-//        myNote.setValue(NSUUID().uuidString, forKeyPath: "guid")
-//        myNote.setValue("", forKeyPath: "title")
-//        myNote.setValue("", forKeyPath: "content")
-//        myNote.setValue(NSDate(), forKeyPath: "dateCreated")
-//        
-//        // 4
-//        do {
-//            try managedContext.save()
-//            success = true
-//            //notes.append(myNote)
-//            
-//        } catch let error as NSError {
-//            print("Could not save. \(error), \(error.userInfo)")
-//        }
-//        return success
-//    }
-    
-//    func save(noteTitle: String, noteContent: String) {
-//        
-//        guard let appDelegate =
-//            UIApplication.shared.delegate as? AppDelegate else {
-//                return
-//        }
-//        
-//        // 1
-//        let managedContext =
-//            appDelegate.persistentContainer.viewContext
-//        
-//        // 2
-//        let entity =
-//            NSEntityDescription.entity(forEntityName: "Note",
-//                                       in: managedContext)!
-//        
-//        let myNote = NSManagedObject(entity: entity,
-//                                     insertInto: managedContext)
-//        
-//        // 3
-//        myNote.setValue(NSUUID().uuidString, forKeyPath: "guid")
-//        myNote.setValue(noteTitle, forKeyPath: "title")
-//        myNote.setValue(noteContent, forKeyPath: "content")
-//        myNote.setValue(NSDate(), forKeyPath: "dateCreated")
-//        
-//        // 4
-//        do {
-//            try managedContext.save()
-//            notes.append(myNote)
-//        } catch let error as NSError {
-//            print("Could not save. \(error), \(error.userInfo)")
-//        }
-//    }
     
     // MARK: - Segues
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == "newNote" {
-//            
-//        }
-        
         if segue.identifier == "showDetail" {
             if let indexPath = tableView.indexPathForSelectedRow {
                 
@@ -245,6 +165,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.endUpdates()
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
     }
 
     /*
