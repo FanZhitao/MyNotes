@@ -73,11 +73,12 @@ class DetailViewController: UIViewController {
         if (DetailViewController.guid == nil)
         {
             DetailViewController.guid = NSUUID().uuidString
+            myNote.setValue(NSDate(), forKeyPath: "dateCreated")
             print("New note being created: \(DetailViewController.guid ?? "nil")")
+            
         }
         
         myNote.setValue(DetailViewController.guid, forKeyPath: "guid")
-        
         myNote.setValue(noteTitle.text, forKeyPath: "title")
         myNote.setValue(noteContent.text, forKeyPath: "content")
         myNote.setValue(NSDate(), forKeyPath: "dateUpdated")
