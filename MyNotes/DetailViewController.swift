@@ -6,7 +6,7 @@ import UIKit
 import Foundation
 import CoreData
 
-class DetailViewController: UIViewController {
+class DetailViewController: UIViewController, UITextViewDelegate {
     
     @IBOutlet weak var noteContent: UITextView!
     @IBOutlet weak var detailDescriptionLabel: UILabel!
@@ -35,6 +35,7 @@ class DetailViewController: UIViewController {
         
         noteContent.layer.borderWidth = 0.5
         noteContent.layer.cornerRadius = 5
+        noteContent.delegate = self
         // Do any additional setup after loading the view, typically from a nib.
         configureView()
     }
@@ -111,6 +112,11 @@ class DetailViewController: UIViewController {
     // Dismiss keyboard when user taps the return key on the keyboard after editing title
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
+        return false
+    }
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        noteContent.endEditing(true)
         return false
     }
     
