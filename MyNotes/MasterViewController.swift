@@ -1,7 +1,7 @@
 //
 // The Master VC displays all the stored notes and allows a 
 // user to ADD or DELETE a note. Selecting a note from the list will display
-// the note details in the DetailViewController
+// the note details and allow editing in the DetailViewController.
 //
 
 import UIKit
@@ -19,9 +19,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         super.viewDidLoad()
         managedObjectContext?.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         
-        title = "MyNotes"
+        title = "My Notes"
         navigationItem.leftBarButtonItem = editButtonItem
 
+        // configure the add ('+') button
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewNote(_:)))
         navigationItem.rightBarButtonItem = addButton
         if let split = splitViewController {
@@ -40,75 +41,88 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
 
     func insertNewNote(_ sender: Any) {
-        let alert = UIAlertController(title: "New Note",
-                                      message: "Add a new note",
-                                      preferredStyle: .alert)
-        
-        let saveAction = UIAlertAction(title: "Save",
-                                       style: .default) {
-                                        [unowned self] action in
-                                        
-                                        let titleField = alert.textFields![0] as UITextField
-                                        let contentField = alert.textFields![1] as UITextField
-                                        
-                                        self.save(noteTitle: (titleField.text)!, noteContent: (contentField.text)!)
-                                        
-                                        self.tableView.reloadData()
-        }
-        
-        let cancelAction = UIAlertAction(title: "Cancel",
-                                         style: .default)
-        
-        alert.addTextField { (textField : UITextField!) -> Void in
-            textField.placeholder = "Title"
-        }
-        alert.addTextField { (textField : UITextField!) -> Void in
-            textField.placeholder = "Note Content"
-        }
-        
-        alert.addAction(saveAction)
-        alert.addAction(cancelAction)
-        
-        present(alert, animated: true)
+        self.performSegue(withIdentifier: "showDetail", sender: (Any).self);
     }
 
-    func save(noteTitle: String, noteContent: String) {
-        
-        guard let appDelegate =
-            UIApplication.shared.delegate as? AppDelegate else {
-                return
-        }
-        
-        // 1
-        let managedContext =
-            appDelegate.persistentContainer.viewContext
-        
-        // 2
-        let entity =
-            NSEntityDescription.entity(forEntityName: "Note",
-                                       in: managedContext)!
-        
-        let myNote = NSManagedObject(entity: entity,
-                                     insertInto: managedContext)
-        
-        // 3
-        myNote.setValue(NSUUID().uuidString, forKeyPath: "guid")
-        myNote.setValue(noteTitle, forKeyPath: "title")
-        myNote.setValue(noteContent, forKeyPath: "content")
-        myNote.setValue(NSDate(), forKeyPath: "dateCreated")
-        
-        // 4
-        do {
-            try managedContext.save()
-            notes.append(myNote)
-        } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
-        }
-    }
+//    func createNote() -> Bool {
+//        var success = false
+//        
+//        guard let appDelegate =
+//            UIApplication.shared.delegate as? AppDelegate else {
+//                return false
+//        }
+//        
+//        // 1
+//        let managedContext =
+//            appDelegate.persistentContainer.viewContext
+//        
+//        // 2
+//        let entity =
+//            NSEntityDescription.entity(forEntityName: "Note",
+//                                       in: managedContext)!
+//        
+//        let myNote = NSManagedObject(entity: entity,
+//                                     insertInto: managedContext)
+//        
+//        // 3
+//        myNote.setValue(NSUUID().uuidString, forKeyPath: "guid")
+//        myNote.setValue("", forKeyPath: "title")
+//        myNote.setValue("", forKeyPath: "content")
+//        myNote.setValue(NSDate(), forKeyPath: "dateCreated")
+//        
+//        // 4
+//        do {
+//            try managedContext.save()
+//            success = true
+//            //notes.append(myNote)
+//            
+//        } catch let error as NSError {
+//            print("Could not save. \(error), \(error.userInfo)")
+//        }
+//        return success
+//    }
+    
+//    func save(noteTitle: String, noteContent: String) {
+//        
+//        guard let appDelegate =
+//            UIApplication.shared.delegate as? AppDelegate else {
+//                return
+//        }
+//        
+//        // 1
+//        let managedContext =
+//            appDelegate.persistentContainer.viewContext
+//        
+//        // 2
+//        let entity =
+//            NSEntityDescription.entity(forEntityName: "Note",
+//                                       in: managedContext)!
+//        
+//        let myNote = NSManagedObject(entity: entity,
+//                                     insertInto: managedContext)
+//        
+//        // 3
+//        myNote.setValue(NSUUID().uuidString, forKeyPath: "guid")
+//        myNote.setValue(noteTitle, forKeyPath: "title")
+//        myNote.setValue(noteContent, forKeyPath: "content")
+//        myNote.setValue(NSDate(), forKeyPath: "dateCreated")
+//        
+//        // 4
+//        do {
+//            try managedContext.save()
+//            notes.append(myNote)
+//        } catch let error as NSError {
+//            print("Could not save. \(error), \(error.userInfo)")
+//        }
+//    }
     
     // MARK: - Segues
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        if segue.identifier == "newNote" {
+//            
+//        }
+        
         if segue.identifier == "showDetail" {
             if let indexPath = tableView.indexPathForSelectedRow {
                 
@@ -121,7 +135,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
     }
 
-    // MARK: - Table View
+    // MARK: - table view boiler plate stuff
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         return fetchedResultsController.sections?.count ?? 0

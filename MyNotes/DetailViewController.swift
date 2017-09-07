@@ -17,25 +17,12 @@ class DetailViewController: UIViewController {
         sender.resignFirstResponder()
     }
     
-    static var guid: String = ""
+    static var guid: String?
     
-    //Timer! Property for auto-saving of note
+    //Timer! Property for auto-saving of a note
     var autoSaveTimer: Timer!
     
     var notes: [NSManagedObject] = []
-
-    // Display the note title and content
-    func configureView() {
-        print(DetailViewController.guid)
-        
-        if let title = noteDetail?.value(forKey: "title") as? String {
-            noteTitle?.text = title
-        }
-
-        if let content = noteDetail?.value(forKey: "content") as? String {
-            noteContent?.text = content
-        }
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,6 +38,19 @@ class DetailViewController: UIViewController {
         noteContent.layer.cornerRadius = 5
         // Do any additional setup after loading the view, typically from a nib.
         configureView()
+    }
+    
+    // Display the note title and content
+    func configureView() {
+        print("Note GUID: \(DetailViewController.guid ?? "nil")")
+        
+        if let title = noteDetail?.value(forKey: "title") as? String {
+            noteTitle?.text = title
+        }
+        
+        if let content = noteDetail?.value(forKey: "content") as? String {
+            noteContent?.text = content
+        }
     }
     
     func autoSave() {
@@ -72,7 +72,15 @@ class DetailViewController: UIViewController {
                                      insertInto: managedContext)
         
         // 3
+        if (DetailViewController.guid == nil)
+        {
+            print("Note GUID: \(DetailViewController.guid ?? "nil")")
+            DetailViewController.guid = NSUUID().uuidString
+        }
+        
+        print("Note GUID: \(DetailViewController.guid ?? "nil")")
         myNote.setValue(DetailViewController.guid, forKeyPath: "guid")
+        
         myNote.setValue(noteTitle.text, forKeyPath: "title")
         myNote.setValue(noteContent.text, forKeyPath: "content")
         myNote.setValue(NSDate(), forKeyPath: "dateUpdated")
@@ -89,6 +97,7 @@ class DetailViewController: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         autoSaveTimer.invalidate()
+        DetailViewController.guid = nil
     }
     
     override func didReceiveMemoryWarning() {
